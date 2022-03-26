@@ -1,0 +1,116 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+label,
+input,
+textarea {
+  display: block;
+  margin: 0.5rem 0;
+}
+
+label {
+  font-weight: bold;
+}
+
+input,
+textarea {
+  font: inherit;
+  padding: 0.2rem 0.4rem;
+  width: 100%;
+  max-width: 30rem;
+  border: 1px solid #ccc;
+  &:focus {
+    outline: none;
+    background: #fff5f9;
+  }
+}
+
+button {
+  font: inherit;
+  background: #ff0062;
+  border: 1px solid #ff0062;
+  cursor: pointer;
+  color: white;
+  padding: 0.75rem 1rem;
+  &:focus {
+    outline: none;
+  }
+  &:hover,
+  &:active {
+    background: #a80041;
+    border-color: #a80041;
+  }
+}
+
+#finished-projects {
+  border-color: #0044ff;
+  header {
+    background: #0044ff;
+  }
+
+  &.projects {
+    h2 {
+      margin: 0;
+      color: white;
+    }
+  }
+  &.droppable {
+    background: #d6e1ff;
+  }
+  li {
+    h2 {
+      color: #0044ff;
+    }
+  }
+}
+#user-input {
+  margin: 1rem;
+  padding: 1rem;
+  border: 1px solid #ff0062;
+  background: #f7f7f7;
+}
+.projects {
+  margin: 1rem;
+  border: 1px solid #ff0062;
+  header {
+    background: #ff0062;
+    height: 3.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 1rem;
+    li {
+      box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.26);
+      padding: 1rem;
+      margin: 1rem;
+      h2 {
+        color: #ff0062;
+        margin: 0.5rem 0;
+      }
+      h3 {
+        color: #575757;
+        font-size: 1rem;
+      }
+      p {
+        margin: 0;
+      }
+    }
+  }
+}
+
+.projects .projects li #finished-projects .projects li .project li .droppable {
+  background: #ffe3ee;
+}

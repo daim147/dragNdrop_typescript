@@ -1,3 +1,57 @@
+// Project Type
+enum ProjectStatus {
+  Active,
+  Finished,
+}
+
+class Project {
+  constructor(
+    public id: string,
+    public title: string,
+    public description: string,
+    public people: number,
+    public status: ProjectStatus
+  ) {}
+}
+
+// Project State Management
+type Listener = (items: Project[]) => void;
+// Project State Management
+class ProjectState {
+  private listeners: Listener[] = [];
+  private projects: Project[] = [];
+  private static instance: ProjectState;
+
+  private constructor() {}
+
+  static getInstance() {
+    if (this.instance) {
+      return this.instance;
+    }
+    this.instance = new ProjectState();
+    return this.instance;
+  }
+
+  addListener(listenerFn: Listener) {
+    this.listeners.push(listenerFn);
+  }
+
+  addProject(title: string, description: string, people: number) {
+    const newProject = new Project(
+      Math.random().toString(),
+      title,
+      description,
+      people,
+      ProjectStatus.Active
+    );
+    this.projects.push(newProject);
+    for (const listenerFn of this.listeners) {
+      listenerFn(this.projects.slice());
+    }
+  }
+}
+const projectState = ProjectState.getInstance();
+
 //! Decorator for autoBindThis
 
 const AutoBindThis = (_: any, __: string, property: PropertyDescriptor) => {
@@ -15,7 +69,7 @@ const AutoBindThis = (_: any, __: string, property: PropertyDescriptor) => {
 };
 
 interface ValidateAble {
-  value?: string | number;
+  value?: string | number | boolean;
   name: string;
   required?: boolean;
   minLength?: number;
@@ -27,7 +81,7 @@ interface ValidateAble {
 interface ValidStatus {
   name: string;
   valid: boolean;
-  validatorFails: string[];
+  validatorFails: ValidateAble[];
 }
 interface inputElement {
   name: string;
@@ -36,14 +90,15 @@ interface inputElement {
 type Validators = {
   [Property in keyof ValidateAble]-?: (name: string) => boolean;
 };
+type userTuple = [string, string, number];
+
 class Validate implements Omit<Validators, "value" | "name"> {
   valid: boolean = true;
-  validatorFails: string[] = [];
+  validatorFails: ValidateAble[] = [];
   constructor(public validation: ValidateAble) {
     for (let validator in this.validation) {
       const check = this[validator as keyof ValidateAble](validator);
       if (typeof check === "boolean") {
-        console.log(check, validator);
         if (!check) {
           this.valid = check;
         }
@@ -60,8 +115,12 @@ class Validate implements Omit<Validators, "value" | "name"> {
   type() {
     return typeof this.validation.value;
   }
-  required() {
-    return !!this.notNull();
+  required(name?: string) {
+    if (name) {
+      return !!this.notNull() || !!this.sendError(name);
+    } else {
+      return !!this.notNull();
+    }
   }
   notNull() {
     return this.value()?.toString().trim().length;
@@ -69,42 +128,38 @@ class Validate implements Omit<Validators, "value" | "name"> {
   minLength(name: string) {
     const length = this.notNull();
     const minLength = this.validation.minLength;
-    // console.log(length, minLength, name);
     if (typeof length === "number" && typeof minLength === "number" && length >= minLength) {
       return true;
     }
-    this.validatorFails.push(name);
+    this.sendError(name);
     return false;
   }
   maxLength(name: string) {
     const length = this.notNull();
     const maxLength = this.validation.maxLength;
-    // console.log(length, maxLength, name);
     if (typeof length === "number" && typeof maxLength === "number" && length <= maxLength) {
       return true;
     }
-    this.validatorFails.push(name);
+    this.sendError(name);
     return false;
   }
   min(name: string) {
     let valid: boolean = false;
     const min = this.validation?.min;
     if (this.required() && min) {
-      console.log(min, name, this.type());
       if (this.type() === "string") {
         const stringNumber = parseFloat(this.value() as string);
-        console.log(min, name, this.type(), stringNumber);
 
         if (!isNaN(stringNumber) && stringNumber >= min) {
           valid = true;
         } else {
-          this.validatorFails.push(name);
+          this.sendError(name);
           valid = false;
         }
       } else if (this.type() === "number" && (this.value() as number) >= min) {
         valid = true;
       } else {
-        this.validatorFails.push(name);
+        this.sendError(name);
         valid = false;
       }
     }
@@ -114,26 +169,66 @@ class Validate implements Omit<Validators, "value" | "name"> {
     let valid: boolean = false;
     const max = this.validation?.max;
     if (this.required() && max) {
-      console.log(max, name, this.type());
-
       if (this.type() === "string") {
         const stringNumber = parseFloat(this.value() as string);
-        console.log(max, name, this.type(), stringNumber);
 
         if (!isNaN(stringNumber) && stringNumber <= max) {
           valid = true;
         } else {
-          this.validatorFails.push(name);
+          this.sendError(name);
           valid = false;
         }
       } else if (this.type() === "number" && (this.value() as number) <= max) {
         valid = true;
       } else {
-        this.validatorFails.push(name);
+        this.sendError(name);
         valid = false;
       }
     }
     return valid;
+  }
+  sendError(name: string) {
+    this.validatorFails.push({ name, value: this.validation[name as keyof ValidateAble]! });
+    return false;
+  }
+}
+// ProjectList Class
+class ProjectList {
+  templateElement: HTMLTemplateElement;
+  hostElement: HTMLDivElement;
+  element: HTMLElement;
+  assignedProjects: Project[] = [];
+  constructor(private type: "active" | "finished") {
+    this.templateElement = document.getElementById("project-list")! as HTMLTemplateElement;
+    this.hostElement = document.getElementById("app")! as HTMLDivElement;
+
+    const importedNode = document.importNode(this.templateElement.content, true);
+    this.element = importedNode.firstElementChild as HTMLElement;
+    this.element.id = `${this.type}-projects`;
+    projectState.addListener((projects: Project[]) => {
+      this.assignedProjects = projects;
+      this.renderProjects();
+    });
+    this.attach();
+    this.renderContent();
+  }
+  private renderProjects() {
+    const listEl = document.getElementById(`${this.type}-projects-list`)! as HTMLUListElement;
+    for (const prjItem of this.assignedProjects) {
+      const listItem = document.createElement("li");
+      listItem.textContent = prjItem.title;
+      listEl.appendChild(listItem);
+    }
+  }
+
+  private renderContent() {
+    const listId = `${this.type}-projects-list`;
+    this.element.querySelector("ul")!.id = listId;
+    this.element.querySelector("h2")!.textContent = this.type.toUpperCase() + " PROJECTS";
+  }
+
+  private attach() {
+    this.hostElement.insertAdjacentElement("beforeend", this.element);
   }
 }
 class ProjectInput {
@@ -169,9 +264,11 @@ class ProjectInput {
   @AutoBindThis
   private submitHandler(event: Event) {
     event.preventDefault();
-    const userInput = this.getUserInput();
+    const userInput = this.getUserInput()! as userTuple;
+    console.log(userInput);
     if (Array.isArray(userInput)) {
-      // this.clearUserInput();
+      projectState.addProject(...userInput);
+      this.clearUserInput();
     }
   }
   private clearUserInput() {
@@ -204,15 +301,25 @@ class ProjectInput {
     return validStatus;
   }
   private getUserInput() {
-    console.log(
-      this.validateArray(
-        [
-          { name: "title", maxLength: 10, minLength: 5 },
-          { name: "people", maxLength: 5, minLength: 2 },
-        ],
-        this.inputElements
-      )
+    const validation = this.validateArray(
+      [
+        { name: "title", maxLength: 10, minLength: 5 },
+        { name: "people", max: 5, min: 5, required: true },
+        { name: "description", required: true },
+      ],
+      this.inputElements
     );
+    for (let valid of validation) {
+      if (!valid.valid) {
+        alert(
+          `Please ensure ${valid.name} to valid and fullfil ${valid.validatorFails.map(
+            (valid) => `${valid.name} to ${valid.value} `
+          )}`
+        );
+        return;
+      }
+    }
+
     return this.userTuples.map(this.mapTuplesIntoArray, this.inputElements);
   }
   private config() {
@@ -224,3 +331,5 @@ class ProjectInput {
 }
 
 const a = new ProjectInput();
+const activePrjList = new ProjectList("active");
+const finishedPrjList = new ProjectList("finished");

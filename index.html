@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>ProjectManager</title>
     <link rel="stylesheet" href="app.scss" />
-    <script src="src/app.ts" defer></script>
+    <script src="dist/app.js" defer></script>
   </head>
   <body>
     <template id="project-input">
@@ -27,7 +27,11 @@
       </form>
     </template>
     <template id="single-project">
-      <li></li>
+      <li draggable="true">
+        <h2></h2>
+        <h3></h3>
+        <p></p>
+      </li>
     </template>
     <template id="project-list">
       <section class="projects">

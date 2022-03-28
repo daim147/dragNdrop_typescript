@@ -246,10 +246,10 @@ var Validate = /*#__PURE__*/function () {
     }
   }, {
     key: "notNull",
-    value: function notNull() {
+    value: function notNull(value) {
       var _a;
 
-      return (_a = this.value()) === null || _a === void 0 ? void 0 : _a.toString().trim().length;
+      return (_a = typeof value !== "undefined" ? value : this.value()) === null || _a === void 0 ? void 0 : _a.toString().trim().length;
     }
   }, {
     key: "minLength",
@@ -285,7 +285,7 @@ var Validate = /*#__PURE__*/function () {
       var valid = false;
       var min = (_a = this.validation) === null || _a === void 0 ? void 0 : _a.min;
 
-      if (this.required() && min) {
+      if (this.required() && this.notNull(min)) {
         if (this.type() === "string") {
           var stringNumber = parseFloat(this.value());
 
@@ -313,7 +313,7 @@ var Validate = /*#__PURE__*/function () {
       var valid = false;
       var max = (_a = this.validation) === null || _a === void 0 ? void 0 : _a.max;
 
-      if (this.required() && max) {
+      if (this.required() && this.notNull(max)) {
         if (this.type() === "string") {
           var stringNumber = parseFloat(this.value());
 
@@ -514,9 +514,7 @@ var ProjectItem = /*#__PURE__*/function (_Component) {
     }
   }, {
     key: "dragEndHandler",
-    value: function dragEndHandler(_) {
-      console.log("DragEnd");
-    }
+    value: function dragEndHandler(_) {}
   }, {
     key: "configure",
     value: function configure() {
@@ -735,14 +733,13 @@ var ProjectInput = /*#__PURE__*/function (_Component3) {
         maxLength: 15,
         minLength: 5
       }, {
-        name: "people",
-        max: 10,
-        min: 0,
-        required: true
-      }, {
         name: "description",
         minLength: 10,
         maxLength: 100
+      }, {
+        name: "people",
+        max: 10,
+        min: 0
       }], this.inputElements);
 
       var _iterator3 = _createForOfIteratorHelper(validation),
@@ -751,7 +748,6 @@ var ProjectInput = /*#__PURE__*/function (_Component3) {
       try {
         for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
           var valid = _step3.value;
-          console.log(valid);
 
           if (!valid.valid) {
             alert("Please ensure ".concat(valid.name, " to valid and fullfil ").concat(valid.validatorFails.map(function (valid) {
@@ -829,7 +825,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63826" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65274" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

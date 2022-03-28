@@ -66,8 +66,8 @@ class Validate implements Omit<Validators, "value" | "name"> {
       return !!this.notNull();
     }
   }
-  notNull() {
-    return this.value()?.toString().trim().length;
+  notNull(value?: string | number | boolean) {
+    return (typeof value !== "undefined" ? value : this.value())?.toString().trim().length;
   }
   minLength(name: string) {
     const length = this.notNull();
@@ -89,15 +89,15 @@ class Validate implements Omit<Validators, "value" | "name"> {
   }
   min(name: string) {
     let valid: boolean = false;
-    const min = this.validation?.min;
-    if (this.required() && min) {
+    const min = this.validation?.min!;
+    if (this.required() && this.notNull(min)) {
       if (this.type() === "string") {
         const stringNumber = parseFloat(this.value() as string);
-
         if (!isNaN(stringNumber) && stringNumber >= min) {
           valid = true;
         } else {
           this.sendError(name);
+
           valid = false;
         }
       } else if (this.type() === "number" && (this.value() as number) >= min) {
@@ -111,8 +111,8 @@ class Validate implements Omit<Validators, "value" | "name"> {
   }
   max(name: string) {
     let valid: boolean = false;
-    const max = this.validation?.max;
-    if (this.required() && max) {
+    const max = this.validation?.max!;
+    if (this.required() && this.notNull(max)) {
       if (this.type() === "string") {
         const stringNumber = parseFloat(this.value() as string);
 
@@ -281,9 +281,7 @@ class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> implements 
     event.dataTransfer!.effectAllowed = "move";
   }
 
-  dragEndHandler(_: DragEvent) {
-    console.log("DragEnd");
-  }
+  dragEndHandler(_: DragEvent) {}
 
   configure() {
     this.element.addEventListener("dragstart", this.dragStartHandler);
@@ -392,7 +390,6 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
   renderContent() {}
   validate(obj: ValidateAble) {
     const { validatorFails, valid } = new Validate(obj);
-
     return { validatorFails, valid };
   }
   validateArray<K>(arr: ValidateAble[], data: K & inputElement[]): ValidStatus[] {
@@ -420,13 +417,12 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
     const validation = this.validateArray(
       [
         { name: "title", maxLength: 15, minLength: 5 },
-        { name: "people", max: 10, min: 0, required: true },
         { name: "description", minLength: 10, maxLength: 100 },
+        { name: "people", max: 10, min: 0 },
       ],
       this.inputElements
     );
     for (let valid of validation) {
-      console.log(valid);
       if (!valid.valid) {
         alert(
           `Please ensure ${valid.name} to valid and fullfil ${valid.validatorFails.map(

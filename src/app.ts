@@ -419,9 +419,9 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
   private gatherUserInput() {
     const validation = this.validateArray(
       [
-        { name: "title", maxLength: 10, minLength: 5 },
-        { name: "people", max: 5, min: 5, required: true },
-        { name: "description", required: true },
+        { name: "title", maxLength: 15, minLength: 5 },
+        { name: "people", max: 10, min: 0, required: true },
+        { name: "description", minLength: 10, maxLength: 100 },
       ],
       this.inputElements
     );

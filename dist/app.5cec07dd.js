@@ -732,16 +732,17 @@ var ProjectInput = /*#__PURE__*/function (_Component3) {
     value: function gatherUserInput() {
       var validation = this.validateArray([{
         name: "title",
-        maxLength: 10,
+        maxLength: 15,
         minLength: 5
       }, {
         name: "people",
-        max: 5,
-        min: 5,
+        max: 10,
+        min: 0,
         required: true
       }, {
         name: "description",
-        required: true
+        minLength: 10,
+        maxLength: 100
       }], this.inputElements);
 
       var _iterator3 = _createForOfIteratorHelper(validation),
@@ -828,7 +829,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63049" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63826" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

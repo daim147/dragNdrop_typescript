@@ -117,18 +117,119 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"src/app.ts":[function(require,module,exports) {
+})({"src/components/base-component.ts":[function(require,module,exports) {
+"use strict"; // Component Base Class
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var Component = /*#__PURE__*/function () {
+  function Component(templateId, hostElementId, insertAtStart, newElementId) {
+    _classCallCheck(this, Component);
+
+    this.templateElement = document.getElementById(templateId);
+    this.hostElement = document.getElementById(hostElementId);
+    var importedNode = document.importNode(this.templateElement.content, true);
+    this.element = importedNode.firstElementChild;
+
+    if (newElementId) {
+      this.element.id = newElementId;
+    }
+
+    this.attach(insertAtStart);
+  }
+
+  _createClass(Component, [{
+    key: "attach",
+    value: function attach(insertAtBeginning) {
+      this.hostElement.insertAdjacentElement(insertAtBeginning ? "afterbegin" : "beforeend", this.element);
+    }
+  }]);
+
+  return Component;
+}();
+
+exports.default = Component;
+},{}],"src/decorators/autobind.ts":[function(require,module,exports) {
 "use strict";
 
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+var __rest = this && this.__rest || function (s, e) {
+  var t = {};
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+  for (var p in s) {
+    if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
+  }
 
-function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
+  }
+  return t;
+};
 
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.AutoBindThis = void 0; // autobind decorator
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+var AutoBindThis = function AutoBindThis(_, __, property) {
+  var value = property.value,
+      writable = property.writable,
+      object = __rest(property, ["value", "writable"]);
+
+  var returnObj = Object.assign(Object.assign({}, object), {
+    get: function get() {
+      return value.bind(this);
+    },
+    set: function set() {}
+  });
+  return returnObj;
+};
+
+exports.AutoBindThis = AutoBindThis;
+},{}],"src/models/project.ts":[function(require,module,exports) {
+"use strict";
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Project = exports.ProjectStatus = void 0;
+var ProjectStatus;
+
+(function (ProjectStatus) {
+  ProjectStatus[ProjectStatus["Active"] = 0] = "Active";
+  ProjectStatus[ProjectStatus["Finished"] = 1] = "Finished";
+})(ProjectStatus = exports.ProjectStatus || (exports.ProjectStatus = {}));
+
+var Project = /*#__PURE__*/_createClass(function Project(id, title, description, people, status) {
+  _classCallCheck(this, Project);
+
+  this.id = id;
+  this.title = title;
+  this.description = description;
+  this.people = people;
+  this.status = status;
+});
+
+exports.Project = Project;
+},{}],"src/state/project-state.ts":[function(require,module,exports) {
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
@@ -154,50 +255,113 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.projectState = exports.ProjectState = void 0;
+
+var project_1 = require("../models/project");
+
+var State = /*#__PURE__*/function () {
+  function State() {
+    _classCallCheck(this, State);
+
+    this.listeners = [];
+  }
+
+  _createClass(State, [{
+    key: "addListener",
+    value: function addListener(listenerFn) {
+      this.listeners.push(listenerFn);
+    }
+  }]);
+
+  return State;
+}();
+
+var ProjectState = /*#__PURE__*/function (_State) {
+  _inherits(ProjectState, _State);
+
+  var _super = _createSuper(ProjectState);
+
+  function ProjectState() {
+    var _this;
+
+    _classCallCheck(this, ProjectState);
+
+    _this = _super.call(this);
+    _this.projects = [];
+    return _this;
+  }
+
+  _createClass(ProjectState, [{
+    key: "addProject",
+    value: function addProject(title, description, numOfPeople) {
+      var newProject = new project_1.Project(Math.random().toString(), title, description, numOfPeople, project_1.ProjectStatus.Active);
+      this.projects.push(newProject);
+      this.updateListeners();
+    }
+  }, {
+    key: "moveProject",
+    value: function moveProject(projectId, newStatus) {
+      var project = this.projects.find(function (prj) {
+        return prj.id === projectId;
+      });
+
+      if (project && project.status !== newStatus) {
+        project.status = newStatus;
+        this.updateListeners();
+      }
+    }
+  }, {
+    key: "updateListeners",
+    value: function updateListeners() {
+      var _iterator = _createForOfIteratorHelper(this.listeners),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var listenerFn = _step.value;
+          listenerFn(this.projects.slice());
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+    }
+  }], [{
+    key: "getInstance",
+    value: function getInstance() {
+      if (this.instance) {
+        return this.instance;
+      }
+
+      this.instance = new ProjectState();
+      return this.instance;
+    }
+  }]);
+
+  return ProjectState;
+}(State);
+
+exports.ProjectState = ProjectState;
+exports.projectState = ProjectState.getInstance();
+},{"../models/project":"src/models/project.ts"}],"src/util/validation.ts":[function(require,module,exports) {
+"use strict";
+
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
-var __decorate = this && this.__decorate || function (decorators, target, key, desc) {
-  var c = arguments.length,
-      r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-      d;
-  if ((typeof Reflect === "undefined" ? "undefined" : _typeof(Reflect)) === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);else for (var i = decorators.length - 1; i >= 0; i--) {
-    if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-  }
-  return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var __metadata = this && this.__metadata || function (k, v) {
-  if ((typeof Reflect === "undefined" ? "undefined" : _typeof(Reflect)) === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-var __rest = this && this.__rest || function (s, e) {
-  var t = {};
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-  for (var p in s) {
-    if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
-  }
-
-  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
-  }
-  return t;
-};
-
-var _a, _b, _c, _d, _e;
-
-var AutoBindThis = function AutoBindThis(_, __, property) {
-  var value = property.value,
-      writable = property.writable,
-      object = __rest(property, ["value", "writable"]);
-
-  var returnObj = Object.assign(Object.assign({}, object), {
-    get: function get() {
-      return value.bind(this);
-    },
-    set: function set() {}
-  });
-  return returnObj;
-};
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Validate = void 0;
 
 var Validate = /*#__PURE__*/function () {
   function Validate(validation) {
@@ -345,330 +509,114 @@ var Validate = /*#__PURE__*/function () {
   }]);
 
   return Validate;
-}(); // Project Type
-
-
-var ProjectStatus;
-
-(function (ProjectStatus) {
-  ProjectStatus[ProjectStatus["Active"] = 0] = "Active";
-  ProjectStatus[ProjectStatus["Finished"] = 1] = "Finished";
-})(ProjectStatus || (ProjectStatus = {}));
-
-var Project = /*#__PURE__*/_createClass(function Project(id, title, description, people, status) {
-  _classCallCheck(this, Project);
-
-  this.id = id;
-  this.title = title;
-  this.description = description;
-  this.people = people;
-  this.status = status;
-});
-
-var State = /*#__PURE__*/function () {
-  function State() {
-    _classCallCheck(this, State);
-
-    this.listeners = [];
-  }
-
-  _createClass(State, [{
-    key: "addListener",
-    value: function addListener(listenerFn) {
-      this.listeners.push(listenerFn);
-    }
-  }]);
-
-  return State;
 }();
 
-var ProjectState = /*#__PURE__*/function (_State) {
-  _inherits(ProjectState, _State);
+exports.Validate = Validate;
+},{}],"src/components/project-input.ts":[function(require,module,exports) {
+"use strict";
 
-  var _super = _createSuper(ProjectState);
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
-  function ProjectState() {
-    var _this;
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-    _classCallCheck(this, ProjectState);
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
-    _this = _super.call(this);
-    _this.projects = [];
-    return _this;
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+var __decorate = this && this.__decorate || function (decorators, target, key, desc) {
+  var c = arguments.length,
+      r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+      d;
+  if ((typeof Reflect === "undefined" ? "undefined" : _typeof(Reflect)) === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);else for (var i = decorators.length - 1; i >= 0; i--) {
+    if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
   }
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 
-  _createClass(ProjectState, [{
-    key: "addProject",
-    value: function addProject(title, description, numOfPeople) {
-      var newProject = new Project(Math.random().toString(), title, description, numOfPeople, ProjectStatus.Active);
-      this.projects.push(newProject);
-      this.updateListeners();
-    }
-  }, {
-    key: "moveProject",
-    value: function moveProject(projectId, newStatus) {
-      var project = this.projects.find(function (prj) {
-        return prj.id === projectId;
-      });
+var __metadata = this && this.__metadata || function (k, v) {
+  if ((typeof Reflect === "undefined" ? "undefined" : _typeof(Reflect)) === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 
-      if (project && project.status !== newStatus) {
-        project.status = newStatus;
-        this.updateListeners();
-      }
-    }
-  }, {
-    key: "updateListeners",
-    value: function updateListeners() {
-      var _iterator = _createForOfIteratorHelper(this.listeners),
-          _step;
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
 
-      try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var listenerFn = _step.value;
-          listenerFn(this.projects.slice());
-        }
-      } catch (err) {
-        _iterator.e(err);
-      } finally {
-        _iterator.f();
-      }
-    }
-  }], [{
-    key: "getInstance",
-    value: function getInstance() {
-      if (this.instance) {
-        return this.instance;
-      }
+var _a;
 
-      this.instance = new ProjectState();
-      return this.instance;
-    }
-  }]);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ProjectInput = void 0;
 
-  return ProjectState;
-}(State);
+var base_component_1 = __importDefault(require("./base-component"));
 
-var projectState = ProjectState.getInstance(); // Component Base Class
+var autobind_1 = require("../decorators/autobind");
 
-var Component = /*#__PURE__*/function () {
-  function Component(templateId, hostElementId, insertAtStart, newElementId) {
-    _classCallCheck(this, Component);
+var project_state_1 = require("../state/project-state");
 
-    this.templateElement = document.getElementById(templateId);
-    this.hostElement = document.getElementById(hostElementId);
-    var importedNode = document.importNode(this.templateElement.content, true);
-    this.element = importedNode.firstElementChild;
+var validation_1 = require("../util/validation");
 
-    if (newElementId) {
-      this.element.id = newElementId;
-    }
+var ProjectInput = /*#__PURE__*/function (_base_component_1$def) {
+  _inherits(ProjectInput, _base_component_1$def);
 
-    this.attach(insertAtStart);
-  }
-
-  _createClass(Component, [{
-    key: "attach",
-    value: function attach(insertAtBeginning) {
-      this.hostElement.insertAdjacentElement(insertAtBeginning ? "afterbegin" : "beforeend", this.element);
-    }
-  }]);
-
-  return Component;
-}(); // ProjectItem Class
-
-
-var ProjectItem = /*#__PURE__*/function (_Component) {
-  _inherits(ProjectItem, _Component);
-
-  var _super2 = _createSuper(ProjectItem);
-
-  function ProjectItem(hostId, project) {
-    var _this2;
-
-    _classCallCheck(this, ProjectItem);
-
-    _this2 = _super2.call(this, "single-project", hostId, false, project.id);
-    _this2.project = project;
-
-    _this2.configure();
-
-    _this2.renderContent();
-
-    return _this2;
-  }
-
-  _createClass(ProjectItem, [{
-    key: "persons",
-    get: function get() {
-      if (this.project.people === 1) {
-        return "1 person";
-      } else {
-        return "".concat(this.project.people, " persons");
-      }
-    }
-  }, {
-    key: "dragStartHandler",
-    value: function dragStartHandler(event) {
-      event.dataTransfer.setData("text/plain", this.project.id);
-      event.dataTransfer.effectAllowed = "move";
-    }
-  }, {
-    key: "dragEndHandler",
-    value: function dragEndHandler(_) {}
-  }, {
-    key: "configure",
-    value: function configure() {
-      this.element.addEventListener("dragstart", this.dragStartHandler);
-      this.element.addEventListener("dragend", this.dragEndHandler);
-    }
-  }, {
-    key: "renderContent",
-    value: function renderContent() {
-      this.element.querySelector("h2").textContent = this.project.title;
-      this.element.querySelector("h3").textContent = this.persons + " assigned";
-      this.element.querySelector("p").textContent = this.project.description;
-    }
-  }]);
-
-  return ProjectItem;
-}(Component);
-
-__decorate([AutoBindThis, __metadata("design:type", Function), __metadata("design:paramtypes", [typeof (_a = typeof DragEvent !== "undefined" && DragEvent) === "function" ? _a : Object]), __metadata("design:returntype", void 0)], ProjectItem.prototype, "dragStartHandler", null); // ProjectList Class
-
-
-var ProjectList = /*#__PURE__*/function (_Component2) {
-  _inherits(ProjectList, _Component2);
-
-  var _super3 = _createSuper(ProjectList);
-
-  function ProjectList(type) {
-    var _this3;
-
-    _classCallCheck(this, ProjectList);
-
-    _this3 = _super3.call(this, "project-list", "app", false, "".concat(type, "-projects"));
-    _this3.type = type;
-    _this3.assignedProjects = [];
-
-    _this3.configure();
-
-    _this3.renderContent();
-
-    return _this3;
-  }
-
-  _createClass(ProjectList, [{
-    key: "dragOverHandler",
-    value: function dragOverHandler(event) {
-      if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
-        event.preventDefault();
-        var listEl = this.element.querySelector("ul");
-        listEl.classList.add("droppable");
-      }
-    }
-  }, {
-    key: "dropHandler",
-    value: function dropHandler(event) {
-      var prjId = event.dataTransfer.getData("text/plain");
-      projectState.moveProject(prjId, this.type === "active" ? ProjectStatus.Active : ProjectStatus.Finished);
-    }
-  }, {
-    key: "dragLeaveHandler",
-    value: function dragLeaveHandler(_) {
-      var listEl = this.element.querySelector("ul");
-      listEl.classList.remove("droppable");
-    }
-  }, {
-    key: "configure",
-    value: function configure() {
-      var _this4 = this;
-
-      this.element.addEventListener("dragover", this.dragOverHandler);
-      this.element.addEventListener("dragleave", this.dragLeaveHandler);
-      this.element.addEventListener("drop", this.dropHandler);
-      projectState.addListener(function (projects) {
-        var relevantProjects = projects.filter(function (prj) {
-          if (_this4.type === "active") {
-            return prj.status === ProjectStatus.Active;
-          }
-
-          return prj.status === ProjectStatus.Finished;
-        });
-        _this4.assignedProjects = relevantProjects;
-
-        _this4.renderProjects();
-      });
-    }
-  }, {
-    key: "renderContent",
-    value: function renderContent() {
-      var listId = "".concat(this.type, "-projects-list");
-      this.element.querySelector("ul").id = listId;
-      this.element.querySelector("h2").textContent = this.type.toUpperCase() + " PROJECTS";
-    }
-  }, {
-    key: "renderProjects",
-    value: function renderProjects() {
-      var listEl = document.getElementById("".concat(this.type, "-projects-list"));
-      listEl.innerHTML = "";
-
-      var _iterator2 = _createForOfIteratorHelper(this.assignedProjects),
-          _step2;
-
-      try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var prjItem = _step2.value;
-          new ProjectItem(this.element.querySelector("ul").id, prjItem);
-        }
-      } catch (err) {
-        _iterator2.e(err);
-      } finally {
-        _iterator2.f();
-      }
-    }
-  }]);
-
-  return ProjectList;
-}(Component);
-
-__decorate([AutoBindThis, __metadata("design:type", Function), __metadata("design:paramtypes", [typeof (_b = typeof DragEvent !== "undefined" && DragEvent) === "function" ? _b : Object]), __metadata("design:returntype", void 0)], ProjectList.prototype, "dragOverHandler", null);
-
-__decorate([AutoBindThis, __metadata("design:type", Function), __metadata("design:paramtypes", [typeof (_c = typeof DragEvent !== "undefined" && DragEvent) === "function" ? _c : Object]), __metadata("design:returntype", void 0)], ProjectList.prototype, "dropHandler", null);
-
-__decorate([AutoBindThis, __metadata("design:type", Function), __metadata("design:paramtypes", [typeof (_d = typeof DragEvent !== "undefined" && DragEvent) === "function" ? _d : Object]), __metadata("design:returntype", void 0)], ProjectList.prototype, "dragLeaveHandler", null); // ProjectInput Class
-
-
-var ProjectInput = /*#__PURE__*/function (_Component3) {
-  _inherits(ProjectInput, _Component3);
-
-  var _super4 = _createSuper(ProjectInput);
+  var _super = _createSuper(ProjectInput);
 
   function ProjectInput() {
-    var _this5;
+    var _this;
 
     _classCallCheck(this, ProjectInput);
 
-    _this5 = _super4.call(this, "project-input", "app", true, "user-input");
-    _this5.inputElements = [];
-    _this5.userTuples = ["string", "string", "number"];
-    _this5.titleInputElement = _this5.element.querySelector("#title");
-    _this5.descriptionInputElement = _this5.element.querySelector("#description");
-    _this5.peopleInputElement = _this5.element.querySelector("#people");
+    _this = _super.call(this, "project-input", "app", true, "user-input");
+    _this.inputElements = [];
+    _this.userTuples = ["string", "string", "number"];
+    _this.titleInputElement = _this.element.querySelector("#title");
+    _this.descriptionInputElement = _this.element.querySelector("#description");
+    _this.peopleInputElement = _this.element.querySelector("#people");
 
-    _this5.inputElements.push({
+    _this.inputElements.push({
       name: "title",
-      element: _this5.titleInputElement
+      element: _this.titleInputElement
     }, {
       name: "description",
-      element: _this5.descriptionInputElement
+      element: _this.descriptionInputElement
     }, {
       name: "people",
-      element: _this5.peopleInputElement
+      element: _this.peopleInputElement
     });
 
-    _this5.configure();
+    _this.configure();
 
-    return _this5;
+    return _this;
   }
 
   _createClass(ProjectInput, [{
@@ -682,9 +630,9 @@ var ProjectInput = /*#__PURE__*/function (_Component3) {
   }, {
     key: "validate",
     value: function validate(obj) {
-      var _Validate = new Validate(obj),
-          validatorFails = _Validate.validatorFails,
-          valid = _Validate.valid;
+      var _validation_1$Validat = new validation_1.Validate(obj),
+          validatorFails = _validation_1$Validat.validatorFails,
+          valid = _validation_1$Validat.valid;
 
       return {
         validatorFails: validatorFails,
@@ -694,7 +642,7 @@ var ProjectInput = /*#__PURE__*/function (_Component3) {
   }, {
     key: "validateArray",
     value: function validateArray(arr, data) {
-      var _this6 = this;
+      var _this2 = this;
 
       var validStatus = [];
       arr.forEach(function (obj) {
@@ -704,7 +652,7 @@ var ProjectInput = /*#__PURE__*/function (_Component3) {
             name = _data$find.name,
             value = _data$find.element.value;
 
-        var valid = _this6.validate(Object.assign(Object.assign({}, obj), {
+        var valid = _this2.validate(Object.assign(Object.assign({}, obj), {
           value: value
         }));
 
@@ -742,12 +690,12 @@ var ProjectInput = /*#__PURE__*/function (_Component3) {
         min: 0
       }], this.inputElements);
 
-      var _iterator3 = _createForOfIteratorHelper(validation),
-          _step3;
+      var _iterator = _createForOfIteratorHelper(validation),
+          _step;
 
       try {
-        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-          var valid = _step3.value;
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var valid = _step.value;
 
           if (!valid.valid) {
             alert("Please ensure ".concat(valid.name, " to valid and fullfil ").concat(valid.validatorFails.map(function (valid) {
@@ -757,9 +705,9 @@ var ProjectInput = /*#__PURE__*/function (_Component3) {
           }
         }
       } catch (err) {
-        _iterator3.e(err);
+        _iterator.e(err);
       } finally {
-        _iterator3.f();
+        _iterator.f();
       }
 
       return this.userTuples.map(this.mapTuplesIntoArray, this.inputElements);
@@ -783,21 +731,320 @@ var ProjectInput = /*#__PURE__*/function (_Component3) {
             desc = _userInput[1],
             people = _userInput[2];
 
-        projectState.addProject(title, desc, people);
+        project_state_1.projectState.addProject(title, desc, people);
         this.clearInputs();
       }
     }
   }]);
 
   return ProjectInput;
-}(Component);
+}(base_component_1.default);
 
-__decorate([AutoBindThis, __metadata("design:type", Function), __metadata("design:paramtypes", [typeof (_e = typeof Event !== "undefined" && Event) === "function" ? _e : Object]), __metadata("design:returntype", void 0)], ProjectInput.prototype, "submitHandler", null);
+__decorate([autobind_1.AutoBindThis, __metadata("design:type", Function), __metadata("design:paramtypes", [typeof (_a = typeof Event !== "undefined" && Event) === "function" ? _a : Object]), __metadata("design:returntype", void 0)], ProjectInput.prototype, "submitHandler", null);
 
-var prjInput = new ProjectInput();
-var activePrjList = new ProjectList("active");
-var finishedPrjList = new ProjectList("finished");
-},{}],"../../../.config/yarn/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+exports.ProjectInput = ProjectInput;
+},{"./base-component":"src/components/base-component.ts","../decorators/autobind":"src/decorators/autobind.ts","../state/project-state":"src/state/project-state.ts","../util/validation":"src/util/validation.ts"}],"src/components/project-item.ts":[function(require,module,exports) {
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+var __decorate = this && this.__decorate || function (decorators, target, key, desc) {
+  var c = arguments.length,
+      r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+      d;
+  if ((typeof Reflect === "undefined" ? "undefined" : _typeof(Reflect)) === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);else for (var i = decorators.length - 1; i >= 0; i--) {
+    if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  }
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+var __metadata = this && this.__metadata || function (k, v) {
+  if ((typeof Reflect === "undefined" ? "undefined" : _typeof(Reflect)) === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+var _a;
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ProjectItem = void 0;
+
+var base_component_1 = __importDefault(require("./base-component"));
+
+var autobind_1 = require("../decorators/autobind"); // ProjectItem Class
+
+
+var ProjectItem = /*#__PURE__*/function (_base_component_1$def) {
+  _inherits(ProjectItem, _base_component_1$def);
+
+  var _super = _createSuper(ProjectItem);
+
+  function ProjectItem(hostId, project) {
+    var _this;
+
+    _classCallCheck(this, ProjectItem);
+
+    _this = _super.call(this, "single-project", hostId, false, project.id);
+    _this.project = project;
+
+    _this.configure();
+
+    _this.renderContent();
+
+    return _this;
+  }
+
+  _createClass(ProjectItem, [{
+    key: "persons",
+    get: function get() {
+      if (this.project.people === 1) {
+        return "1 person";
+      } else {
+        return "".concat(this.project.people, " persons");
+      }
+    }
+  }, {
+    key: "dragStartHandler",
+    value: function dragStartHandler(event) {
+      event.dataTransfer.setData("text/plain", this.project.id);
+      event.dataTransfer.effectAllowed = "move";
+    }
+  }, {
+    key: "dragEndHandler",
+    value: function dragEndHandler(_) {}
+  }, {
+    key: "configure",
+    value: function configure() {
+      this.element.addEventListener("dragstart", this.dragStartHandler);
+      this.element.addEventListener("dragend", this.dragEndHandler);
+    }
+  }, {
+    key: "renderContent",
+    value: function renderContent() {
+      this.element.querySelector("h2").textContent = this.project.title;
+      this.element.querySelector("h3").textContent = this.persons + " assigned";
+      this.element.querySelector("p").textContent = this.project.description;
+    }
+  }]);
+
+  return ProjectItem;
+}(base_component_1.default);
+
+__decorate([autobind_1.AutoBindThis, __metadata("design:type", Function), __metadata("design:paramtypes", [typeof (_a = typeof DragEvent !== "undefined" && DragEvent) === "function" ? _a : Object]), __metadata("design:returntype", void 0)], ProjectItem.prototype, "dragStartHandler", null);
+
+exports.ProjectItem = ProjectItem;
+},{"./base-component":"src/components/base-component.ts","../decorators/autobind":"src/decorators/autobind.ts"}],"src/components/project-list.ts":[function(require,module,exports) {
+"use strict";
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+var __decorate = this && this.__decorate || function (decorators, target, key, desc) {
+  var c = arguments.length,
+      r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+      d;
+  if ((typeof Reflect === "undefined" ? "undefined" : _typeof(Reflect)) === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);else for (var i = decorators.length - 1; i >= 0; i--) {
+    if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  }
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+var __metadata = this && this.__metadata || function (k, v) {
+  if ((typeof Reflect === "undefined" ? "undefined" : _typeof(Reflect)) === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+var _a, _b, _c;
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ProjectList = void 0;
+
+var project_1 = require("../models/project");
+
+var base_component_1 = __importDefault(require("./base-component"));
+
+var autobind_1 = require("../decorators/autobind");
+
+var project_state_1 = require("../state/project-state");
+
+var project_item_1 = require("./project-item"); // ProjectList Class
+
+
+var ProjectList = /*#__PURE__*/function (_base_component_1$def) {
+  _inherits(ProjectList, _base_component_1$def);
+
+  var _super = _createSuper(ProjectList);
+
+  function ProjectList(type) {
+    var _this;
+
+    _classCallCheck(this, ProjectList);
+
+    _this = _super.call(this, "project-list", "app", false, "".concat(type, "-projects"));
+    _this.type = type;
+    _this.assignedProjects = [];
+
+    _this.configure();
+
+    _this.renderContent();
+
+    return _this;
+  }
+
+  _createClass(ProjectList, [{
+    key: "dragOverHandler",
+    value: function dragOverHandler(event) {
+      if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
+        event.preventDefault();
+        var listEl = this.element.querySelector("ul");
+        listEl.classList.add("droppable");
+      }
+    }
+  }, {
+    key: "dropHandler",
+    value: function dropHandler(event) {
+      var prjId = event.dataTransfer.getData("text/plain");
+      project_state_1.projectState.moveProject(prjId, this.type === "active" ? project_1.ProjectStatus.Active : project_1.ProjectStatus.Finished);
+    }
+  }, {
+    key: "dragLeaveHandler",
+    value: function dragLeaveHandler(_) {
+      var listEl = this.element.querySelector("ul");
+      listEl.classList.remove("droppable");
+    }
+  }, {
+    key: "configure",
+    value: function configure() {
+      var _this2 = this;
+
+      this.element.addEventListener("dragover", this.dragOverHandler);
+      this.element.addEventListener("dragleave", this.dragLeaveHandler);
+      this.element.addEventListener("drop", this.dropHandler);
+      project_state_1.projectState.addListener(function (projects) {
+        var relevantProjects = projects.filter(function (prj) {
+          if (_this2.type === "active") {
+            return prj.status === project_1.ProjectStatus.Active;
+          }
+
+          return prj.status === project_1.ProjectStatus.Finished;
+        });
+        _this2.assignedProjects = relevantProjects;
+
+        _this2.renderProjects();
+      });
+    }
+  }, {
+    key: "renderContent",
+    value: function renderContent() {
+      var listId = "".concat(this.type, "-projects-list");
+      this.element.querySelector("ul").id = listId;
+      this.element.querySelector("h2").textContent = this.type.toUpperCase() + " PROJECTS";
+    }
+  }, {
+    key: "renderProjects",
+    value: function renderProjects() {
+      var listEl = document.getElementById("".concat(this.type, "-projects-list"));
+      listEl.innerHTML = "";
+
+      var _iterator = _createForOfIteratorHelper(this.assignedProjects),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var prjItem = _step.value;
+          new project_item_1.ProjectItem(this.element.querySelector("ul").id, prjItem);
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+    }
+  }]);
+
+  return ProjectList;
+}(base_component_1.default);
+
+__decorate([autobind_1.AutoBindThis, __metadata("design:type", Function), __metadata("design:paramtypes", [typeof (_a = typeof DragEvent !== "undefined" && DragEvent) === "function" ? _a : Object]), __metadata("design:returntype", void 0)], ProjectList.prototype, "dragOverHandler", null);
+
+__decorate([autobind_1.AutoBindThis, __metadata("design:type", Function), __metadata("design:paramtypes", [typeof (_b = typeof DragEvent !== "undefined" && DragEvent) === "function" ? _b : Object]), __metadata("design:returntype", void 0)], ProjectList.prototype, "dropHandler", null);
+
+__decorate([autobind_1.AutoBindThis, __metadata("design:type", Function), __metadata("design:paramtypes", [typeof (_c = typeof DragEvent !== "undefined" && DragEvent) === "function" ? _c : Object]), __metadata("design:returntype", void 0)], ProjectList.prototype, "dragLeaveHandler", null);
+
+exports.ProjectList = ProjectList;
+},{"../models/project":"src/models/project.ts","./base-component":"src/components/base-component.ts","../decorators/autobind":"src/decorators/autobind.ts","../state/project-state":"src/state/project-state.ts","./project-item":"src/components/project-item.ts"}],"src/app.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var project_input_1 = require("./components/project-input");
+
+var project_list_1 = require("./components/project-list");
+
+new project_input_1.ProjectInput();
+new project_list_1.ProjectList("active");
+new project_list_1.ProjectList("finished");
+},{"./components/project-input":"src/components/project-input.ts","./components/project-list":"src/components/project-list.ts"}],"../../../.config/yarn/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -825,7 +1072,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65274" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62160" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
